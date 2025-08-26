@@ -93,7 +93,7 @@ def process(S_0, T, mu, sigma, steps, N):
 
 # Page pour l'option européenne
 def euro_option_page():
-    st.title("Pricer Equity par méthode Monte Carlo & Black & Scholes pour Option Européenne")
+    st.title("Pricing Option Européene sur Equity par méthode Monte Carlo et Black & Scholes")
     st.markdown(
         """
         On note $S_{t}$ le prix d'un actif fixé au temps $t$. Le modèle de Black et Scholes consiste à dire que le prix de cet actif répond à l'équation différentielle stochastique suivante:
@@ -180,6 +180,24 @@ def euro_option_page():
             st.subheader("Conclusion")
             st.write("On remarque que le prix donné par la Formule de Black Scholes se rapproche fortement de celui donné par la méthode Monte Carlo.")
 
+        # P&L 
+        S_T_values = np.linspace(0, 2*S_0, 100)
+        if option_type == "call":
+            PnL_curve = np.maximum(S_T_values - K, 0) - option_price_mc
+        elif option_type == "put":
+            PnL_curve = np.maximum(K - S_T_values, 0) - option_price_mc
+
+        st.subheader("Profil P&L de l'option")
+
+        # Définir une figure plus petite
+        fig, ax = plt.subplots(figsize=(6, 4))  # largeur=6 pouces, hauteur=4 pouces
+
+        ax.plot(S_T_values, PnL_curve)
+        ax.set_xlabel("Prix du sous-jacent à maturité S_T")
+        ax.set_ylabel("P&L")
+        ax.set_title("Profil P&L de l'option")
+
+        st.pyplot(fig)
 
     # Calcul des Grecques
     delta = greeks(S_0, K, r, sigma, T, "delta", option_type)
